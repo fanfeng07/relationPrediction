@@ -59,7 +59,7 @@ def parse_args():
     args.add_argument("-alpha", "--alpha", type=float,
                       default=0.2, help="LeakyRelu alphs for SpGAT layer")
     args.add_argument("-out_dim", "--entity_out_dim", type=int, nargs='+',
-                      default=[100, 200], help="Entity output embedding dimensions")
+                      default=[50, 100], help="Entity output embedding dimensions")
     args.add_argument("-h_gat", "--nheads_GAT", type=int, nargs='+',
                       default=[2, 2], help="Multihead attention SpGAT")
     args.add_argument("-margin", "--margin", type=float,
@@ -156,8 +156,8 @@ def batch_gat_loss(gat_loss_func, train_indices, entity_embed, relation_embed):
     x = source_embeds + relation_embeds - tail_embeds
     neg_norm = torch.norm(x, p=1, dim=1)
 
-    y = -torch.ones(int(args.valid_invalid_ratio_gat) * len_pos_triples).cuda()
-
+    # y = -torch.ones(int(args.valid_invalid_ratio_gat) * len_pos_triples).cuda()
+    y = -torch.ones(int(args.valid_invalid_ratio_gat) * len_pos_triples)
     loss = gat_loss_func(pos_norm, neg_norm, y)
     return loss
 
@@ -357,13 +357,14 @@ def evaluate_conv(args, unique_entities):
     model_conv.load_state_dict(torch.load(
         '{0}conv/trained_{1}.pth'.format(args.output_folder, args.epochs_conv - 1)), strict=False)
 
-    model_conv.cuda()
+    # model_conv.cuda()
+    model_conv
     model_conv.eval()
     with torch.no_grad():
         Corpus_.get_validation_pred(args, model_conv, unique_entities)
 
 
 train_gat(args)
-
+print('\n Training finished!\n')
 train_conv(args)
 evaluate_conv(args, Corpus_.unique_entities_train)

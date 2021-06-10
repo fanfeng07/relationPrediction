@@ -140,8 +140,10 @@ class SpKBGATModified(nn.Module):
             Corpus_, batch_inputs, self.entity_embeddings, self.relation_embeddings,
             edge_list, edge_type, edge_embed, edge_list_nhop, edge_type_nhop)
 
-        mask_indices = torch.unique(batch_inputs[:, 2]).cuda()
-        mask = torch.zeros(self.entity_embeddings.shape[0]).cuda()
+        # mask_indices = torch.unique(batch_inputs[:, 2]).cuda()
+        # mask = torch.zeros(self.entity_embeddings.shape[0]).cuda()
+        mask_indices = torch.unique(batch_inputs[:, 2])
+        mask = torch.zeros(self.entity_embeddings.shape[0])
         mask[mask_indices] = 1.0
 
         entities_upgraded = self.entity_embeddings.mm(self.W_entities)
